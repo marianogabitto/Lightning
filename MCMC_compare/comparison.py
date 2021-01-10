@@ -211,6 +211,19 @@ for sep_ in rango:
 # Postprocessing Results - Building Result Table
 print("Finish")
 
+
+def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0, prior2_mean=0.0, prior2_std=2.0):
+    samples2 = stats.norm.rvs(loc=post_mean, scale=post_std, size=samples1.shape[0])
+    Delta_theta = (np.array([samples1]).T - samples2).flatten(0)
+    density = stats.kde.gaussian_kde(Delta_theta, bw_method='scott')
+
+    numerator = stats.norm.pdf(0, loc=prior1_mean - prior2_mean,
+                               scale=np.sqrt(prior1_std ** 2 + prior2_std ** 2))
+    denominator = density.evaluate(0)[0]
+
+    return denominator / numerator
+
+
 for i_ in np.arange(len(results)):
     wr = results[i_]
     sep_ = wr[0]
@@ -234,18 +247,6 @@ for i_ in np.arange(len(results)):
     ks_t1, ks_p1 = stats.kstest(wr[1][:, 0, 0], lambda x: stats.norm.cdf(x, loc=wr[4][idx1[0], 0], scale=wr[5][idx1[0], 0] ** (0.5)))
     ks_t2, ks_p2 = stats.kstest(wr[1][:, 1, 1], lambda x: stats.norm.cdf(x, loc=wr[4][idx1[1], 1], scale=wr[5][idx1[1], 1] ** (0.5)))
     ks_p = ks_p1 * ks_p2
-
-
-    def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0, prior2_mean=0.0, prior2_std=2.0):
-        samples2 = stats.norm.rvs(loc=post_mean, scale=post_std, size=samples1.shape[0])
-        Delta_theta = (np.array([samples1]).T - samples2).flatten(0)
-        density = stats.kde.gaussian_kde(Delta_theta, bw_method='scott')
-
-        numerator = stats.norm.pdf(0, loc=prior1_mean - prior2_mean,
-                                         scale=np.sqrt(prior1_std ** 2 + prior2_std ** 2))
-        denominator = density.evaluate(0)[0]
-
-        return denominator / numerator
 
     bf = savagedickey(samples1=wr[1][:, 0,0:], post_mean=wr[4][idx1[0], 1], post_std=wr[5][idx1[0], 1],
                       prior1_mean=0.0, prior1_std=1000.0, prior2_mean=0.0, prior2_std=1000.0)

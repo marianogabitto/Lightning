@@ -5,20 +5,20 @@ from sklearn.cluster import KMeans
 from scipy.special import psi, gammaln, digamma
 from abc import ABCMeta, abstractmethod
 from scipy.spatial import cKDTree as Tree
-from Utils.fw import fw_bw
-import Utils.QT.python.LightC as LightC
+from ..Utils.fw import fw_bw
+from ..Utils.QT.python import LightC as LightC
 
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-from Utils.ParamBag3 import ParamBag
-from Utils.initial_condition import initiliaze, priors, handle_birth, handle_split
+from ..Utils.ParamBag3 import ParamBag
+from ..Utils.initial_condition import initiliaze, priors, handle_birth, handle_split
 
-from Utils.NumericUtil import convert_to_n0, e_log_beta, e_log_n, inplace_exp_normalize_rows_numpy as e_norm
-from Utils.NumericUtil import dotatb, calc_beta_expectations, calc_entropy, Lalloc
-from Utils.NumericUtil import c_h, c_alpha, c_beta, e_gamma, elog_gamma, c_dir, c_gamma, delta_c, c_obs
+from ..Utils.NumericUtil import convert_to_n0, e_log_beta, e_log_n, inplace_exp_normalize_rows_numpy as e_norm
+from ..Utils.NumericUtil import dotatb, calc_beta_expectations, calc_entropy, Lalloc
+from ..Utils.NumericUtil import c_h, c_alpha, c_beta, e_gamma, elog_gamma, c_dir, c_gamma, delta_c, c_obs
 
 
 CLT_BELONGING = 0.4

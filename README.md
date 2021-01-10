@@ -12,7 +12,14 @@ and then run:
 
 python setup.py build_ext --inplace
 
-the following file contains more information regarding the installation of the C++ core LightningF/Utils/QT/README.txt 
-.
+the following file contains more information regarding the installation of the C++ core LightningF/Utils/QT/README.txt .
 
+# Requirements
+
+For completion, we are including some of the requirements needed to run the software.
+
+
+# Examples
+
+F
 
