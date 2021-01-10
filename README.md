@@ -16,7 +16,8 @@ the following file contains more information regarding the installation of the C
 
 # Requirements
 
-For completion, we are including some of the requirements needed to run the software.
+For completion, we are including the requirements needed to be install before running the software. 
+conda install scipy, numpy, pandas, seaborn, pystan, matplotlib, scikit-learn, cython, disutils, multiprocessing
 
 
 # Examples

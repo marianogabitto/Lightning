@@ -8,6 +8,9 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 
+import sys
+sys.path.append('../')
+
 from LightningF.Datasets.data import create_twofluo, data_import
 from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
 
@@ -25,14 +28,14 @@ def plot_trace(param, param_name='parameter'):
     plt.plot(param)
     plt.xlabel('samples')
     plt.ylabel(param_name)
-    # plt.axhline(mean, color='r', lw=2, linestyle='--')
-    # plt.axhline(median, color='c', lw=2, linestyle='--')
+    plt.axhline(mean, color='r', lw=2, linestyle='--')
+    plt.axhline(median, color='c', lw=2, linestyle='--')
     plt.axhline(cred_min, linestyle=':', color='k', alpha=0.2)
     plt.axhline(cred_max, linestyle=':', color='k', alpha=0.2)
     plt.title('Trace and Posterior Distribution for {}'.format(param_name))
 
     plt.subplot(2, 1, 2)
-    plt.hist(param, 30, density=True);
+    plt.hist(param, 30, density=True)
     if param.shape[1] > 1:
         sns.kdeplot(param[:, 1], shade=True)
         sns.kdeplot(param[:, 0], shade=True)
@@ -140,8 +143,9 @@ model {
 # Parameters
 sns.set()  # Nice plot aesthetic
 
-rango = np.arange(50, 25, -5)
+rango = np.arange(50, 15, -10)
 results = []
+print("Begin Script")
 for sep_ in rango:
     print("Running Distance: {}".format(sep_))
 
@@ -150,11 +154,11 @@ for sep_ in rango:
     data1, data2 = create_twofluo(fluos=new, dist=sep_, noise=0, pl=0, plcircles=0, seed=0)
     x = data1[:, 1:3]
     data1[:, 3:5] = data1[:, 3:5]/10
-    sigma = data1[:, 3:5]**(0.5)
+    sigma = data1[:, 3:5]**0.5
     data = {'N': len(x), 'x': x, 'sigma': sigma}
 
     # LIGHTNING MODEL
-    spacePy = ModelSpacePy(data=data1, init_type='density', infer_pi1=True, infer_alpha0=True, prt=0)
+    spacePy = ModelSpacePy(data=data1, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True, prt=0)
     spacePy.fit(iterations=200, pl=0, prt=True)
 
     # STAN MODEL
@@ -168,7 +172,7 @@ for sep_ in rango:
 
     # Extracting Lightning Values
     mu_l = np.sort(spacePy.Post.mu, axis=0)
-    std_l = spacePy.Post.sigma2**(0.5)
+    std_l = spacePy.Post.sigma2**0.5
 
     # Make one Nice Plot
     if sep_ == 50:
@@ -179,14 +183,14 @@ for sep_ in rango:
             ax[0].add_artist(plt.Circle((data1[n_, 1], data1[n_, 2]), np.sqrt(data1[n_, 3]), fill=False))
 
         ax[1].set_aspect("equal")
-        ax[1] = sns.kdeplot(mu_stan[:, 0, 0], mu_stan[:, 0, 1], cmap="Reds", shade=True, shade_lowest=False, ax=ax[1])
-        ax[1] = sns.kdeplot(mu_stan[:, 1, 0], mu_stan[:, 1, 1], cmap="Reds", shade=True, shade_lowest=False, ax=ax[1])
+        ax[1] = sns.kdeplot(mu_stan[:, 0, 0], mu_stan[:, 0, 1], cmap="Reds", shade=True, thresh=0.05, ax=ax[1])
+        ax[1] = sns.kdeplot(mu_stan[:, 1, 0], mu_stan[:, 1, 1], cmap="Reds", shade=True, thresh=0.05, ax=ax[1])
 
         ax[2].set_aspect("equal")
         x = stats.multivariate_normal(mean=mu_l[0, :], cov=[[std_l[0, 0], 0], [0, std_l[0, 1]]]).rvs(size=10000)
-        ax[2] = sns.kdeplot(x[:, 0], x[:, 1], cmap="Blues", shade=True, shade_lowest=False, ax=ax[2])
+        ax[2] = sns.kdeplot(x[:, 0], x[:, 1], cmap="Blues", shade=True, thresh=0.05, ax=ax[2])
         x = stats.multivariate_normal(mean=mu_l[1, :], cov=[[std_l[1, 0], 0], [0, std_l[1, 1]]]).rvs(size=10000)
-        ax[2] = sns.kdeplot(x[:, 0], x[:, 1], cmap="Blues", shade=True, shade_lowest=False, ax=ax[2])
+        ax[2] = sns.kdeplot(x[:, 0], x[:, 1], cmap="Blues", shade=True, thresh=0.05, ax=ax[2])
 
         xl = [np.min([ax[0].get_xlim(), ax[1].get_xlim(), ax[2].get_xlim()]),
               np.max([ax[0].get_xlim(), ax[1].get_xlim(), ax[2].get_xlim()])]
@@ -199,24 +203,18 @@ for sep_ in rango:
         pp.savefig(f)
         pp.close()
 
-    temp_res = []
-    temp_res.append(sep_)
-    temp_res.append(mu_stan)
-    temp_res.append(mean_mu_stan)
-    temp_res.append(std_mu_stan)
-    temp_res.append(mu_l)
-    temp_res.append(std_l)
+    temp_res = [sep_, mu_stan, mean_mu_stan, std_mu_stan, mu_l, std_l]
 
     results.append(temp_res)
 
 # Postprocessing Results - Building Result Table
-print("Finish")
+print("Finish Fitting")
 
 
 def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0, prior2_mean=0.0, prior2_std=2.0):
     samples2 = stats.norm.rvs(loc=post_mean, scale=post_std, size=samples1.shape[0])
-    Delta_theta = (np.array([samples1]).T - samples2).flatten()
-    density = stats.kde.gaussian_kde(Delta_theta, bw_method='scott')
+    delta_theta = (np.array([samples1]).T - samples2).flatten()
+    density = stats.kde.gaussian_kde(delta_theta, bw_method='scott')
 
     numerator = stats.norm.pdf(0, loc=prior1_mean - prior2_mean,
                                scale=np.sqrt(prior1_std ** 2 + prior2_std ** 2))
@@ -225,8 +223,8 @@ def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0,
     return denominator / numerator
 
 
-for i_ in np.arange(len(results)):
-    wr = results[i_]
+for l_ in np.arange(len(results)):
+    wr = results[l_]
     sep_ = wr[0]
 
     # Find index of clusters
@@ -245,45 +243,17 @@ for i_ in np.arange(len(results)):
     dist2 = np.linalg.norm(wr[2][1, :] - wr[4][idx1[1], :])
     dist = np.mean([dist1, dist2])
 
-    ks_t1, ks_p1 = stats.kstest(wr[1][:, 0, 0], lambda x: stats.norm.cdf(x, loc=wr[4][idx1[0], 0], scale=wr[5][idx1[0], 0] ** (0.5)))
-    ks_t2, ks_p2 = stats.kstest(wr[1][:, 1, 1], lambda x: stats.norm.cdf(x, loc=wr[4][idx1[1], 1], scale=wr[5][idx1[1], 1] ** (0.5)))
+    ks_t1, ks_p1 = stats.kstest(wr[1][:, 0, 0], lambda xx: stats.norm.cdf(xx, loc=wr[4][idx1[0], 0],
+                                                                          scale=wr[5][idx1[0], 0] ** 0.5))
+    ks_t2, ks_p2 = stats.kstest(wr[1][:, 1, 1], lambda xx: stats.norm.cdf(xx, loc=wr[4][idx1[1], 1],
+                                                                          scale=wr[5][idx1[1], 1] ** 0.5))
     ks_p = ks_p1 * ks_p2
 
-    bf = savagedickey(samples1=wr[1][:, 0,0:], post_mean=wr[4][idx1[0], 1], post_std=wr[5][idx1[0], 1],
+    bf = savagedickey(samples1=wr[1][:, 0, 0:], post_mean=wr[4][idx1[0], 1], post_std=wr[5][idx1[0], 1],
                       prior1_mean=0.0, prior1_std=1000.0, prior2_mean=0.0, prior2_std=1000.0)
 
-    print("Separation [nm]:{}   Avg. Distance VI-MCMC:{:1.2f}   KS:{:1.2f}   BF:{:1.2f}   Avg Ratio MCMC/VI Std:{:1.2f}".
-          format(sep_, dist, ks_p, bf, ratio))
+    print(
+        "Separation [nm]:{}   Avg. Distance VI-MCMC:{:1.2f}   KS:{:1.2f}   BF:{:1.2f}   Avg Ratio MCMC/VI Std:{:1.2f}".
+        format(sep_, dist, ks_p, bf, ratio))
 
-print("finish")
-
-"""
-distance = np.linalg.norm(mean_mu_stan - mu_l, axis=1)
-print(mean_mu_stan - mu_l)
-print(distance)
-
-
-plt.plot(mu[:, 0, 0], mu[:, 1, 0],'.')
-plt.plot(mu[:, 0, 1], mu[:, 1, 1],'.')
-plt.show()
-
-plot_trace(mu, 'mu')
-plt.show()
-
-plot_trace(mu_stan, 'mu')
-plt.show()
-
-plt.plot(fit['mu'][:, 0], '.')
-plt.show()
-
-plt.plot(fit['mu'][:, 1], '.')
-plt.show()
-
-plt.plot(mu_stan[:, 0, 0], mu_stan[:, 0, 1], '.')
-plt.plot(mu_stan[:, 1, 0], mu_stan[:, 1, 1], '.')
-plt.show()
-
-plt.plot(mu_stan[:, 0], '.')
-plt.plot(mu_stan[:, 1], '.')
-plt.show()
-"""
+print("Finish Script")
