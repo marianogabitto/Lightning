@@ -177,8 +177,11 @@ for sep_ in rango:
     # Make one Nice Plot
     if sep_ == 50:
         f, ax = plt.subplots(3, figsize=(8, 8))
+        f.suptitle('Inferred  Position of Fluorophores\' Centers with Different Approximate Bayesian Inference Methods',
+                   fontsize=12)
 
-        ax[0].plot(data1[:, 1], data1[:, 2], '+', ms=0.5)
+        ax[0].set_aspect("equal")
+        ax[0] = sns.scatterplot(data1[:, 1], data1[:, 2], ax=ax[0], color='b', marker='P')
         for n_ in np.arange(data1.shape[0]):
             ax[0].add_artist(plt.Circle((data1[n_, 1], data1[n_, 2]), np.sqrt(data1[n_, 3]), fill=False))
 
@@ -199,6 +202,12 @@ for sep_ in rango:
         for i_ in np.arange(3):
             ax[i_].set_xlim(xl)
             ax[i_].set_ylim(yl)
+
+        ax[0].title.set_text('Observations.')
+        ax[1].title.set_text('Inferred Fluorophores\' Centers [MCMC]')
+        ax[2].title.set_text('Inferred Fluorophores\' Centers [VI]')
+        f.tight_layout()
+
         pp = PdfPages("inference_50nm.pdf")
         pp.savefig(f)
         pp.close()
@@ -221,7 +230,6 @@ def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0,
     denominator = density.evaluate(0)[0]
 
     return denominator / numerator
-
 
 for l_ in np.arange(len(results)):
     wr = results[l_]
