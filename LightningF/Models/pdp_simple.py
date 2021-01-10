@@ -222,7 +222,7 @@ class AbstractModel(object):
     def add_component(self, params):
         self.Post.insert1Comp_fromNoise(params)
 
-    def merge_components(self, comp1, comp2, params):
+    def merge_components(self, comp1, comp2, params=None):
         self.Post.mergeComps(comp1, comp2, params)
 
     def split_component(self, comp, params):
@@ -709,6 +709,8 @@ class TimeIndependentModel(AbstractModel):
         else:
             self.Post = ParamBag(K=rnk.shape[1], D=self.x.shape[1], N=self.x.shape[0], C=rnk.shape[1] - 1)
             self.Post.setField('rnk', rnk, dims=('N', 'K'))
+            self.Post.setField('rn0_vector', np.zeros(self.Post.N), dims='N')
+
             if infer_pi1 is True:
                 self.Post.setField('a', a, dims=None)
                 self.Post.setField('b', b, dims=None)
@@ -1406,7 +1408,7 @@ class TimeDependentModel(AbstractModel):
         # #############################################################################################
         # #############################################################################################
         # Build PRIOR containers
-        self.Prior = ParamBag(K=0, D=self.x.shape[1])
+        self.Prior = ParamBag(K=0, D=self.x.shape[1], A=4)
         self.Prior.setField('mu0', mu0, dims='D')
         self.Prior.setField('sigma02', sigma02, dims='D')
         self.Prior.setField('logp0', log_p0, dims=None)
@@ -1443,7 +1445,7 @@ class TimeDependentModel(AbstractModel):
                 initiliaze(x=self.x, sigma2_x=self.sigma2_x, alpha0=alpha0, condition=condition,
                            init_type=init_type, post=post)
 
-            self.Post = ParamBag(K=k0 + 1, D=self.x.shape[1], N=self.x.shape[0], C=k0)
+            self.Post = ParamBag(K=k0 + 1, D=self.x.shape[1], N=self.x.shape[0], C=k0, A=4)
             self.Post.setField('mu', mu_init.copy(), dims=('C', 'D'))
             self.Post.setField('sigma2', sigma2_init.copy(), dims=('C', 'D'))
             if infer_pi1 is True:
@@ -1451,8 +1453,11 @@ class TimeDependentModel(AbstractModel):
                 self.Post.setField('b', b, dims=None)
             self.Post.setField('alpha', eta0_init, dims='C')
         else:
-            self.Post = ParamBag(K=rnk.shape[1], D=self.x.shape[1], N=self.x.shape[0], C=rnk.shape[1] - 1)
+            self.Post = ParamBag(K=rnk.shape[1], D=self.x.shape[1], N=self.x.shape[0], C=rnk.shape[1] - 1, A=4)
             self.Post.setField('rnk', rnk, dims=('N', 'K'))
+            self.Post.setField('rn0_vector', np.zeros(self.Post.N), dims='N')
+            self.Post.setField('alpha', np.ones(self.Post.C), dims='C')
+
             self.vb_update_global()
 
         # Time dependent terms

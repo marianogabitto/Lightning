@@ -24,8 +24,24 @@ In addition, we include in the root directory two files: environment.yml and req
 
 # Usage
 After cloning the repository, we are going to use Lightning by importing the classes into your project.
+First, create a folder in the repository. Then, add the following lines to import the corresponding classes:
 
+> import sys
+> sys.path.append('../')
 > from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
+
+Then, within your code, you will run the code by including:
+
+> modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True)
+> modelpy.fit(iterations=100, pl=0, prt=1)
+
+To see the results do:
+
+> modelpy.pl_bl() 
+
+Your data should be formatted as a 4-column / 6-column numpy array. the first 2 / 3 columns
+correspond to x,y / x,y,z observation position. The next 2 / 3 coordinates correspond to the
+position uncertainty s_x, s_y / s_x, s_y, s_z. 
 
 # Examples
 The file comparison.py, located in the directory MCMC_compare, generates supplementary figure 2 from the paper.

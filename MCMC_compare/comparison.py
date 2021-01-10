@@ -153,7 +153,6 @@ for sep_ in rango:
     new = data_import(pl=0, dataset='Origami-AF647')
     data1, data2 = create_twofluo(fluos=new, dist=sep_, noise=0, pl=0, plcircles=0, seed=0)
     x = data1[:, 1:3]
-    data1[:, 3:5] = data1[:, 3:5]/10
     sigma = data1[:, 3:5]**0.5
     data = {'N': len(x), 'x': x, 'sigma': sigma}
 

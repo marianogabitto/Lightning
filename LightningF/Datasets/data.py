@@ -37,22 +37,22 @@ def data_import(dataset=None, pl=0):
             new = list()
             new.append(np.zeros((data['obs'].shape[0], 5)))
             new[0][:, :3] = data['obs'][:, 0:3]
-            new[0][:, 3:5] = data['obs'][:, 8][:, None] ** 2
+            new[0][:, 3:5] = data['obs'][:, 8][:, None] ** 2 / 10
 
             # Observations Fluorophore 1
             new.append(np.zeros((data['fluo1'].shape[0], 5)))
             new[1][:, :3] = data['fluo1'][:, 0:3]
-            new[1][:, 3:5] = data['fluo1'][:, 8][:, None] ** 2
+            new[1][:, 3:5] = data['fluo1'][:, 8][:, None] ** 2 / 10
 
             # Observations Fluorophore 2
             new.append(np.zeros((data['fluo2'].shape[0], 5)))
             new[2][:, :3] = data['fluo2'][:, 0:3]
-            new[2][:, 3:5] = data['fluo2'][:, 8][:, None] ** 2
+            new[2][:, 3:5] = data['fluo2'][:, 8][:, None] ** 2 / 10
 
             # Observations Fluorophore 3
             new.append(np.zeros((data['fluo3'].shape[0], 5)))
             new[3][:, :3] = data['fluo3'][:, 0:3]
-            new[3][:, 3:5] = data['fluo3'][:, 8][:, None] ** 2
+            new[3][:, 3:5] = data['fluo3'][:, 8][:, None] ** 2 / 10
 
         # Plot if value passed
         if pl == 1:

@@ -251,33 +251,49 @@ class ParamBag(object):
             k1, k2 = k2, k1
 
         # Eliminate Cluster from Params
-        for key in self._FieldDims:
-            arr = getattr(self, key)
-            dims = self._FieldDims[key]
-            if dims is None:
-                if key in params:
-                    self.setField(key, params[key], dims=dims)
-                continue
-
-            if dims is not None:
-                for dimID, name in enumerate(dims):
-                    if name == 'K':
-                        arr = np.delete(arr, k2, axis=dimID)
-                        if key in params:
-                            attr = params[key]
-                            lattr = len(attr)
-                            arr[k1:k1 + lattr] = attr
-                            np.put_along_axis(arr, np.arange(k1, k1 + lattr), params[key], axis=dimID)
-
-                    if name == 'C':
-                        arr = np.delete(arr, k2 - 1, axis=dimID)
-                        if key in params:
-                            attr = params[key]
-                            lattr = len(attr)
-                            arr[k1-1:k1 + lattr-1] = attr
-                            # np.put_along_axis(arr, np.arange(k1-1, k1 + lattr-1), params[key], axis=dimID)
+        if params is None:
+            # Eliminate Cluster from Params
+            for key in self._FieldDims:
+                arr = getattr(self, key)
+                dims = self._FieldDims[key]
+                if dims is not None:
+                    for dimID, name in enumerate(dims):
+                        if name == 'K':
+                            if key == 'rnk':
+                                arr[:, k1] += arr[:, k2]
+                            arr = np.delete(arr, k2, axis=dimID)
+                        if name == 'C':
+                            arr = np.delete(arr, k2 - 1, axis=dimID)
 
                 self.setField(key, arr, dims)
+        else:
+            for key in self._FieldDims:
+                arr = getattr(self, key)
+                dims = self._FieldDims[key]
+                if dims is None:
+                    if key in params:
+                        self.setField(key, params[key], dims=dims)
+                    continue
+
+                if dims is not None:
+                    for dimID, name in enumerate(dims):
+                        if name == 'K':
+                            arr = np.delete(arr, k2, axis=dimID)
+                            if key in params:
+                                attr = params[key]
+                                lattr = len(attr)
+                                arr[k1:k1 + lattr] = attr
+                                np.put_along_axis(arr, np.arange(k1, k1 + lattr), params[key], axis=dimID)
+
+                        if name == 'C':
+                            arr = np.delete(arr, k2 - 1, axis=dimID)
+                            if key in params:
+                                attr = params[key]
+                                lattr = len(attr)
+                                arr[k1-1:k1 + lattr-1] = attr
+                                # np.put_along_axis(arr, np.arange(k1-1, k1 + lattr-1), params[key], axis=dimID)
+
+                    self.setField(key, arr, dims)
 
     def splitComp(self, k, params):
         """
