@@ -170,6 +170,7 @@ for sep_ in rango:
     mu_l = np.sort(spacePy.Post.mu, axis=0)
     std_l = spacePy.Post.sigma2**(0.5)
 
+    # Make one Nice Plot
     if sep_ == 50:
         f, ax = plt.subplots(3, figsize=(8, 8))
 
@@ -214,7 +215,7 @@ print("Finish")
 
 def savagedickey(samples1, post_mean, post_std, prior1_mean=0.0, prior1_std=2.0, prior2_mean=0.0, prior2_std=2.0):
     samples2 = stats.norm.rvs(loc=post_mean, scale=post_std, size=samples1.shape[0])
-    Delta_theta = (np.array([samples1]).T - samples2).flatten(0)
+    Delta_theta = (np.array([samples1]).T - samples2).flatten()
     density = stats.kde.gaussian_kde(Delta_theta, bw_method='scott')
 
     numerator = stats.norm.pdf(0, loc=prior1_mean - prior2_mean,
@@ -253,6 +254,8 @@ for i_ in np.arange(len(results)):
 
     print("Separation [nm]:{}   Avg. Distance VI-MCMC:{:1.2f}   KS:{:1.2f}   BF:{:1.2f}   Avg Ratio MCMC/VI Std:{:1.2f}".
           format(sep_, dist, ks_p, bf, ratio))
+
+print("finish")
 
 """
 distance = np.linalg.norm(mean_mu_stan - mu_l, axis=1)
