@@ -51,16 +51,14 @@ correspond to x,y / x,y,z observation position. The next 2 / 3 coordinates corre
 position uncertainty s_x, s_y / s_x, s_y, s_z. 
 
 ## Examples
-The file `comparison.py`, located in the directory `MCMC_compare`, generates Supplementary Figure 2 from the paper.
-It shows an example of how to import some of the classes needed to run Lightning.
-To run it, change into the directory and execute: 
+An example showing how to run Lightning appears in the file `comparison.py`, located in the directory `MCMC_compare`. To run it, execute:
 
 ```
-cd LightningF
+cd MCMC_compare
 python comparison.py
 ```
 
-The file should produce a pdf file in the same directory entitled inference_50nm.pdf . In addition, it prints in the console different results. 
+The code prints several metrics and creates a pdf file in the same directory entitled inference_50nm.pdf, corresponding to Supplementary Figure 2 from the paper.
 
 
 ## Citation
