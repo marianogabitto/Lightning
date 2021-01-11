@@ -1,52 +1,79 @@
-# Lightning
-Accompanying Code for: A  Bayesian  nonparametric approach to super-resolution single-molecule localization. Gabitto et al. 
+## Lightning
+Accompanying code for the paper:
+- Gabitto, Marie-Nelly, Pakman, Pataki, Darzak, Jordan [A  Bayesian  nonparametric approach to super-resolution single-molecule localization](https://www.biorxiv.org/content/10.1101/2020.02.15.950873v3)
 
-# Installation
-The current version of Lightning is implemented in Python 3. Clone the github repository to have access to the classes needed to run it.
 
-To install the C++ code that uses Quadtree acceleration, change into the directory:
 
+## Installation
+Lightning is implemented in Python 3. To install it along with the C++ code used for Quadtree acceleration, run the following:
+
+```bash
+git clone https://github.com/marianogabitto/Lightning.git
 cd LightningF/Utils/QT/python/
-
-and then run:
-
 python setup.py build_ext --inplace
+```
 
-the following file contains more information regarding the installation of the C++ core LightningF/Utils/QT/README.txt .
+For more information on the installation of the C++ code see `LightningF/Utils/QT/README.txt`.
 
-# Requirements
+## Requirements
 
-Here, we list the main requirements needed to be installed before running the software. 
+The main packages required before running the software are:
 
-scipy, numpy, pandas, seaborn, pystan, matplotlib, scikit-learn, cython, disutils, multiprocessing
+`scipy, numpy, pandas, seaborn, pystan, matplotlib, scikit-learn, cython, disutils, multiprocessing`
 
-In addition, we include in the root directory two files: environment.yml and requirements.txt. These files recreate the anaconda environment.  
+For anaconda users, the files `environment.yml` and `requirements.txt` in the root directory can be used to recreate the environment.  
 
-# Usage
-After cloning the repository, we are going to use Lightning by importing the classes into your project.
-First, create a folder in the repository. Then, add the following lines to import the corresponding classes:
+## Usage
 
-> import sys
-> sys.path.append('../')
-> from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
+To use Lightning, create a folder in the repository and import in your code the corresponding classes:
 
-Then, within your code, you will run the code by including:
+```
+import sys
+sys.path.append('../')
+from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
+```
 
-> modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True)
-> modelpy.fit(iterations=100, pl=0, prt=1)
+The input data should be created as a 4-column / 6-column numpy array. The first 2 / 3 columns
+correspond to x,y / x,y,z observation positions. The next 2 / 3 columns correspond to the position uncertainties s_x, s_y / s_x, s_y, s_z. 
 
-To see the results do:
+The algorithm is then run by including:
 
-> modelpy.pl_bl() 
+```
+modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True)
+modelpy.fit(iterations=100, pl=0, prt=1)
+```
 
-Your data should be formatted as a 4-column / 6-column numpy array. the first 2 / 3 columns
-correspond to x,y / x,y,z observation position. The next 2 / 3 coordinates correspond to the
-position uncertainty s_x, s_y / s_x, s_y, s_z. 
+And the results can be seen with:
 
-# Examples
-The file comparison.py, located in the directory MCMC_compare, generates supplementary figure 2 from the paper.
-It shows an example of how to import some of the classes needed to run Lightning.
-To run it, change into the directory and execute: 
-> python comparison.py
+```
+modelpy.pl_bl() 
+```
 
-The file should produce a pdf file in the same directory entitled inference_50nm.pdf . In addition, it prints in the console different results. 
+
+
+## Example
+An example showing how to run Lightning appears in the file `comparison.py`, located in the directory `MCMC_compare`. To run it, execute:
+
+```
+cd MCMC_compare
+python comparison.py
+```
+
+The code prints several metrics and creates a pdf file in the same directory entitled `inference_50nm.pdf`, corresponding to Supplementary Figure 2 from the paper.
+
+
+## Citation
+
+If you use this project, please cite the relevant publication as:
+
+```
+@article{gabitto2020bayesian,
+  title={A Bayesian nonparametric approach to super-resolution single-molecule localization},
+  author={Gabitto, Mariano Ignacio and Marie-Nelly, Herve and Pakman, Ari and Pataki, Andras and Darzacq, Xavier and Jordan, Michael},
+  journal={bioRxiv},
+  year={2020},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
+
+
