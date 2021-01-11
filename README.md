@@ -13,7 +13,7 @@ cd LightningF/Utils/QT/python/
 python setup.py build_ext --inplace
 ```
 
-For more information on the installation of the C++ core see `LightningF/Utils/QT/README.txt`.
+For more information on the installation of the C++ code see `LightningF/Utils/QT/README.txt`.
 
 ## Requirements
 
@@ -24,8 +24,8 @@ The main packages required before running the software are:
 For anaconda users, the files `environment.yml` and `requirements.txt` in the root directory can be used to recreate the environment.  
 
 ## Usage
-After cloning the repository, we are going to use Lightning by importing the classes into your project.
-First, create a folder in the repository. Then, add the following lines to import the corresponding classes:
+
+To use Lightning, create a folder in the repository and import in your code the corresponding classes:
 
 ```
 import sys
@@ -33,17 +33,17 @@ sys.path.append('../')
 from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
 ```
 
-Then, the input data should be created as a 4-column / 6-column numpy array. The first 2 / 3 columns
+The input data should be created as a 4-column / 6-column numpy array. The first 2 / 3 columns
 correspond to x,y / x,y,z observation positions. The next 2 / 3 columns correspond to the position uncertainties s_x, s_y / s_x, s_y, s_z. 
 
-Then run the algorithm by including:
+The algorithm is then run by including:
 
 ```
 modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True)
 modelpy.fit(iterations=100, pl=0, prt=1)
 ```
 
-To see the results do:
+And the results can be seen with:
 
 ```
 modelpy.pl_bl() 
