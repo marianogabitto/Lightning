@@ -25,11 +25,11 @@ For anaconda users, the files `environment.yml` and `requirements.txt` in the ro
 
 ## Usage
 
-To use Lightning, create a folder in the repository and import in your code the corresponding classes:
+To use Lightning, import in your code the corresponding class:
 
 ```
 import sys
-sys.path.append('../')
+sys.path.append('/path/to/root/of/the/Lightning/repository/')
 from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
 ```
 
@@ -43,7 +43,7 @@ modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_
 modelpy.fit(iterations=100, pl=0, prt=1)
 ```
 
-And the results can be seen with:
+And the results can be visualized with a plot generated with:
 
 ```
 modelpy.pl_bl() 
@@ -59,7 +59,7 @@ cd MCMC_compare
 python comparison.py
 ```
 
-The code prints several metrics and creates a pdf file in the same directory entitled `inference_50nm.pdf`, corresponding to Supplementary Figure 2 from the paper.
+The code loads one of the datasets used in the paper, compares Lightning with MCMC, prints several metrics and creates a pdf file in the same directory entitled `inference_50nm.pdf`, corresponding to Supplementary Figure 2 from the paper.
 
 
 ## Citation
