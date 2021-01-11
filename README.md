@@ -33,7 +33,10 @@ sys.path.append('../')
 from LightningF.Models.pdp_simple import TimeIndepentModelPython as ModelSpacePy
 ```
 
-Then, within your code, you will run the code by including:
+Then, the input data should be created as a 4-column / 6-column numpy array. The first 2 / 3 columns
+correspond to x,y / x,y,z observation positions. The next 2 / 3 columns correspond to the position uncertainties s_x, s_y / s_x, s_y, s_z. 
+
+Then run the algorithm by including:
 
 ```
 modelpy = ModelSpacePy(data=data, init_type='rl_cluster', infer_pi1=True, infer_alpha0=True)
@@ -46,11 +49,9 @@ To see the results do:
 modelpy.pl_bl() 
 ```
 
-Your data should be formatted as a 4-column / 6-column numpy array. the first 2 / 3 columns
-correspond to x,y / x,y,z observation position. The next 2 / 3 coordinates correspond to the
-position uncertainty s_x, s_y / s_x, s_y, s_z. 
 
-## Examples
+
+## Example
 An example showing how to run Lightning appears in the file `comparison.py`, located in the directory `MCMC_compare`. To run it, execute:
 
 ```
@@ -58,7 +59,7 @@ cd MCMC_compare
 python comparison.py
 ```
 
-The code prints several metrics and creates a pdf file in the same directory entitled inference_50nm.pdf, corresponding to Supplementary Figure 2 from the paper.
+The code prints several metrics and creates a pdf file in the same directory entitled `inference_50nm.pdf`, corresponding to Supplementary Figure 2 from the paper.
 
 
 ## Citation
